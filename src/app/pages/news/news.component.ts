@@ -1,22 +1,29 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { NewsService } from './news.service';
+import { NewsCardComponent } from '../../shared/components/news-card/news-card.component';
+import { LoadingComponent } from '../../shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-news',
-  imports: [],
+  imports: [NewsCardComponent, LoadingComponent],
   templateUrl: './news.component.html',
   styleUrl: './news.component.scss',
 })
 export class NewsComponent {
   private newsService = inject(NewsService);
+  newsParam = input.required<'top' | 'topic'>();
 
   constructor() {}
 
-  get news() {
-    return this.newsService.news;
+  get headlines() {
+    return this.newsService.headlines;
+  }
+
+  get isFetching() {
+    return this.newsService.isFetching;
   }
 
   ngOnInit() {
-    this.newsService.loadNews('top');
+    this.newsService.loadNews(this.newsParam());
   }
 }

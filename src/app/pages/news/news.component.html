@@ -1,1 +1,14 @@
-<div class="news">@for (_news of news; track _news.id ) { }</div>
+<!-- If is dat fetching -->
+@if(isFetching() && !headlines().length) {
+<div class="w-full h-96 flex items-center justify-center">
+  <app-loading></app-loading>
+</div>
+}
+
+<div class="w-full px-4 w-3xl mx-auto">
+  <div class="flex flex-row flex-wrap gap-4 justify-center">
+    @for (_news of headlines(); track _news.title ) {
+    <app-news-card [headline]="_news"></app-news-card>
+    }
+  </div>
+</div>
