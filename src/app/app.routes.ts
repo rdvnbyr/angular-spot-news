@@ -13,15 +13,9 @@ export const routes: Routes = [
         (m) => m.TopHeadlinesComponent
       ),
   },
+
   {
-    path: 'topic-headlines',
-    loadComponent: () =>
-      import('./pages/topic-headlines/topic-headlines.component').then(
-        (m) => m.TopicHeadlinesComponent
-      ),
-  },
-  {
-    path: 'news-detail/:storyId',
+    path: 'article/:title',
     loadComponent: () =>
       import('./pages/news/news-detail/news-detail.component').then(
         (m) => m.NewsDetailComponent

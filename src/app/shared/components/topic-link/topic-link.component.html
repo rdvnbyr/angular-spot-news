@@ -1,0 +1,17 @@
+<li>
+  <a
+    [routerLink]="link()"
+    [queryParams]="param()"
+    [class]="{
+        'block': true,
+        'p-2': true,
+        'bg-white': !activeParam(),
+        'rounded': true,
+        'shadow': true,
+        'bg-gray-200': activeParam(),
+        'hover:bg-gray-200': !activeParam(),
+        'mb-2.5': true,
+    }"
+    >{{ label() }}</a
+  >
+</li>

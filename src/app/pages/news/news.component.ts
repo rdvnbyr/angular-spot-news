@@ -1,7 +1,8 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, DestroyRef, inject, input } from '@angular/core';
 import { NewsService } from './news.service';
 import { NewsCardComponent } from '../../shared/components/news-card/news-card.component';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-news',
@@ -11,7 +12,8 @@ import { LoadingComponent } from '../../shared/components/loading/loading.compon
 })
 export class NewsComponent {
   private newsService = inject(NewsService);
-  newsParam = input.required<'top' | 'topic'>();
+  private activatedRoute = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {}
 
@@ -24,6 +26,16 @@ export class NewsComponent {
   }
 
   ngOnInit() {
-    this.newsService.loadNews(this.newsParam());
+    const subscription = this.activatedRoute.queryParams.subscribe({
+      next: (params) => {
+        if (!params['topic']) {
+          this.newsService.loadNews('top');
+        }
+      },
+    });
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 }

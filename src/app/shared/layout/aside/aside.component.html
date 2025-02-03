@@ -1,1 +1,13 @@
-<p>aside works!</p>
+<aside class="w-full p-2 bg-gray-100">
+  <h2 class="text-xl font-bold mb-4">Topics</h2>
+  <ul class="space-y-2">
+    @for (topic of topics; track topic.label) {
+    <app-topic-link
+      link="./top-headlines"
+      [param]="{ topic: topic.param}"
+      [label]="topic.label"
+      [activeParam]="activeParam() === topic.param"
+    />
+    }
+  </ul>
+</aside>

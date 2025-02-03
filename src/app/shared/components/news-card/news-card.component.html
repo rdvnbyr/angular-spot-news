@@ -1,21 +1,30 @@
 @if(headline()) {
 <div class="max-w-sm rounded overflow-hidden shadow-lg w-3xl h-max pb-4">
-  <img class="w-full h-64" [src]="headline()?.photo_url" alt="News Image" />
+  <img class="w-full h-64" [src]="headline()?.urlToImage" alt="News Image" />
   <!-- date span -->
   <div class="px-6 py-4">
-    <span class="inline-block text-sm font-semibold text-gray-700 mb-2">{{
-      headline()?.published_datetime_utc | date
-    }}</span>
+    <div>
+      <span
+        class="inline-block text-sm font-semibold text-gray-700 mr-2 italic"
+      >
+        {{ headline()?.author }}
+      </span>
+      <span class="inline-block text-sm font-semibold text-gray-700 mr-2"
+        >|</span
+      >
+      <span class="inline-block text-sm font-semibold text-gray-700 mb-2">
+        {{ headline()?.publishedAt | date }}</span
+      >
+    </div>
     <div class="font-bold text-xl mb-2">{{ headline()?.title }}</div>
     <p class="text-gray-700 text-base">
-      {{ headline()?.snippet }}
+      {{ headline()?.description }}
     </p>
   </div>
   <div class="px-6 pt-4 pb-2 flex flex-row justify-between">
     <a
-      href="#"
+      [routerLink]="['/article', headline()?.title]"
       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      target="_blank"
     >
       Read More
     </a>

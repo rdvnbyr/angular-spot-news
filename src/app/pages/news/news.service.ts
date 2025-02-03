@@ -2,6 +2,8 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, throwError } from 'rxjs';
 import { Headline } from '../../shared/models/app.model';
+import { AppService } from '../../app.service';
+import { Router } from '@angular/router';
 
 const API_URL = 'https://real-time-news-data.p.rapidapi.com';
 
@@ -9,31 +11,37 @@ const API_URL = 'https://real-time-news-data.p.rapidapi.com';
   providedIn: 'root',
 })
 export class NewsService {
+  private appService = inject(AppService);
   headlines = signal<Headline[]>([]);
+  headline = signal<Headline | null>(null);
   isFetching = signal<boolean>(false);
   error = signal<string>('');
   private http = inject(HttpClient);
+  private router = inject(Router);
 
-  loadNews(headline: 'top' | 'topic') {
+  loadNews(headline: 'top' | 'topic', topic?: string) {
     this.isFetching.set(true);
+    let httpQuery = `${this.appService.apiUrl}/${headline}-headlines?country=us`;
+    if (topic) {
+      const date = new Date();
+      date.setDate(date.getDate() - 1);
+      const dateStr = date.toISOString().split('T')[0];
+      httpQuery = `${this.appService.apiUrl}/everything?q=${topic}&from=${dateStr}&sortBy=popularity`;
+    }
     return this.http
-      .get<{ status: string; data: Headline[] }>(
-        `${API_URL}/${headline}-headlines?limit=100&country=US&lang=en` + (headline === 'topic' ? '&topic=WORLD' : ''),
-        {
-          headers: {
-            'x-rapidapi-key':
-              '607fc2b0aemshfd3cf29dbb812c0p1c72edjsn5d54c8a70a17',
-            'x-rapidapi-host': 'real-time-news-data.p.rapidapi.com',
-          },
-        }
-      )
+      .get<{ status: string; articles: Headline[] }>(httpQuery, {
+        headers: {
+          Authorization: `${this.appService.apiKey}`,
+        },
+      })
       .pipe(
         map(
           (res) => {
-            if (res.status !== 'OK' || !res.data) {
+            console.log('res', res);
+            if (res.status !== 'ok') {
               throwError(() => new Error('Failed to fetch news headlines'));
             }
-            return res.data;
+            return res.articles;
           },
           catchError(() =>
             throwError(() => new Error('Failed to fetch news headlines'))
@@ -59,4 +67,12 @@ export class NewsService {
   getNewsById(id: string) {}
 
   searchNews(query: string) {}
+
+  loadNewsDetail(title: string) {
+    const findHeadline = this.headlines().find(
+      (headline) => headline.title === title
+    );
+    this.headline.set(findHeadline || null);
+    this.router.navigate(['/article', title]);
+  }
 }
